@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -12,6 +12,9 @@ import { useToast } from '@/hooks/use-toast';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://hsrzysvihamlaupgthrz.supabase.co';
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const INTAKE_URL = `${SUPABASE_URL}/functions/v1/carrier-intake`;
+// Cloudflare Turnstile site key (public, safe in the bundle). The backend verifies the token
+// once TURNSTILE_SECRET_KEY is set on the function — fail-open until then.
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAADrPQCGH9pArEH04';
 
 const EQUIPMENT = [
   { key: 'flatbed', label: 'Flatbed' },
@@ -37,6 +40,9 @@ const OnboardingPage = () => {
   const [done, setDone] = useState(null); // { intake_id, docCount }
   const [errors, setErrors] = useState({});
   const [files, setFiles] = useState({}); // { doc_type: File }
+  const [token, setToken] = useState(''); // Cloudflare Turnstile token
+  const tsRef = useRef(null);
+  const tsWidgetId = useRef(null);
   const [form, setForm] = useState({
     legal_name: '', dba: '', mc_number: '', dot_number: '', contact_name: '', phone: '', email: '',
     city: '', state: '', equipment_types: [], power_units: '', owner_operator: '', operating_areas: '',
@@ -59,6 +65,7 @@ const OnboardingPage = () => {
     }
     if (s === 3) {
       if (!form.tos_accepted) e.tos_accepted = 'Please accept the Terms & Privacy Policy to continue';
+      if (!token) e.turnstile = 'Please complete the verification check below';
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -66,6 +73,44 @@ const OnboardingPage = () => {
 
   const next = () => { if (validate(step)) setStep((s) => Math.min(s + 1, STEPS.length - 1)); else toast({ title: 'Please check the highlighted fields', variant: 'destructive' }); };
   const back = () => setStep((s) => Math.max(s - 1, 0));
+
+  // Load the Cloudflare Turnstile script once.
+  useEffect(() => {
+    if (document.getElementById('cf-turnstile-js')) return;
+    const s = document.createElement('script');
+    s.id = 'cf-turnstile-js';
+    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    s.async = true;
+    s.defer = true;
+    document.head.appendChild(s);
+  }, []);
+
+  // Render the widget on the Review step; remove it on leave so re-entry issues a fresh token.
+  useEffect(() => {
+    if (step !== 3) return;
+    let cancelled = false;
+    const render = () => {
+      if (cancelled) return;
+      if (window.turnstile && tsRef.current && tsWidgetId.current === null) {
+        tsWidgetId.current = window.turnstile.render(tsRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: (t) => setToken(t),
+          'expired-callback': () => setToken(''),
+          'error-callback': () => setToken(''),
+        });
+      } else if (!window.turnstile) {
+        setTimeout(render, 250);
+      }
+    };
+    render();
+    return () => {
+      cancelled = true;
+      if (tsWidgetId.current !== null && window.turnstile) {
+        try { window.turnstile.remove(tsWidgetId.current); } catch (_) { /* noop */ }
+        tsWidgetId.current = null;
+      }
+    };
+  }, [step]);
 
   const submit = async () => {
     if (submitting) return;
@@ -75,7 +120,7 @@ const OnboardingPage = () => {
     setSubmitting(true);
     try {
       const documents = DOCS.filter((d) => files[d.key]).map((d) => ({ doc_type: d.key, file_name: files[d.key].name, content_type: files[d.key].type || 'application/octet-stream' }));
-      const payload = { ...form, power_units: form.power_units ? Number(form.power_units) : null, owner_operator: form.owner_operator === '' ? null : form.owner_operator === 'yes', target_start_date: form.target_start_date || null, documents };
+      const payload = { ...form, power_units: form.power_units ? Number(form.power_units) : null, owner_operator: form.owner_operator === '' ? null : form.owner_operator === 'yes', target_start_date: form.target_start_date || null, documents, turnstile_token: token };
       const res = await fetch(INTAKE_URL, { method: 'POST', headers: { 'content-type': 'application/json', Authorization: `Bearer ${ANON_KEY}`, apikey: ANON_KEY }, body: JSON.stringify(payload) });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || `status ${res.status}`);
@@ -92,6 +137,8 @@ const OnboardingPage = () => {
       setDone({ intake_id: data.intake_id, docCount: uploaded });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
+      if (window.turnstile && tsWidgetId.current !== null) { try { window.turnstile.reset(tsWidgetId.current); } catch (_) { /* noop */ } }
+      setToken('');
       toast({ title: 'Something went wrong', description: 'Please try again or call (631) 807-3088.', variant: 'destructive' });
     } finally {
       setSubmitting(false);
@@ -222,6 +269,10 @@ const OnboardingPage = () => {
                   <span className="text-xs text-gray-600 leading-relaxed">I agree to the <Link to="/terms" className="text-dispatchRed hover:underline">Terms</Link> and <Link to="/privacy" className="text-dispatchRed hover:underline">Privacy Policy</Link>. *</span>
                 </label>
                 {errors.tos_accepted && <p className="text-sm text-red-500">{errors.tos_accepted}</p>}
+                <div className="pt-1">
+                  <div ref={tsRef} className="min-h-[65px]" />
+                  {errors.turnstile && <p className="mt-1 text-sm text-red-500">{errors.turnstile}</p>}
+                </div>
               </div>
             )}
 

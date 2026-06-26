@@ -31,6 +31,25 @@ Deno.serve(async (req: Request) => {
     return json({ error: "missing required: legal_name, mc_number or dot_number, contact_name" }, 400);
   }
 
+  // Cloudflare Turnstile — enforced only once TURNSTILE_SECRET_KEY is set on the function (fail-open
+  // until then, so the form keeps working between shipping the widget frontend and adding the secret).
+  const turnstileSecret = Deno.env.get("TURNSTILE_SECRET_KEY");
+  if (turnstileSecret) {
+    if (!body.turnstile_token) return json({ error: "verification required" }, 403);
+    const vForm = new FormData();
+    vForm.append("secret", turnstileSecret);
+    vForm.append("response", String(body.turnstile_token));
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+    if (ip) vForm.append("remoteip", ip);
+    try {
+      const vRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body: vForm });
+      const outcome = await vRes.json();
+      if (!outcome.success) return json({ error: "verification failed" }, 403);
+    } catch {
+      return json({ error: "verification error" }, 502);
+    }
+  }
+
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const docs = Array.isArray(body.documents) ? body.documents : [];
 
