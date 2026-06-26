@@ -344,7 +344,7 @@ autonomous writes (that earns in later, per Earned Authority).
   on local disk and is migrating into **Supabase as the source of truth**. Git history was rebuilt to a
   clean single-commit baseline so no PII ever reached the remote (217 files, code+docs only — verified).
 - **2026-06-25** — **Architecture firm-up IN PROGRESS** (ratification pending): unified multi-vertical
-  shipper DB to replace the flatbed-only registries (`outbox/shipper_db/ARCHITECTURE.md` + migrated
+  shipper DB to replace the flatbed-only registries (`docs/shipper-database-architecture.md` + migrated
   16k-row master); Supabase backend (`db/schema.sql` ready for operator to provision); grader to be
   rebuilt as a multi-vertical classifier; a standardized `run_metro.py` routine to run the SE campaign
   metro-by-metro. Doctrine: sort-don't-discard (everything binned by equipment), quality over token-
