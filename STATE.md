@@ -337,14 +337,16 @@ autonomous writes (that earns in later, per Earned Authority).
 
 ## OPEN ITEMS / DECISION LOG
 
-- **2026-06-26** — **Turnstile anti-spam wired (pending secret + dist upload).** Cloudflare Turnstile
-  "Managed" widget added to the wizard's Review step (site key `0x4AAAAAADrPQCGH9pArEH04` — public, in
-  `web/acedispatch-site/.env` + hardcoded default); token sent as `turnstile_token`. `carrier-intake`
-  redeployed (v3) with a `siteverify` check that is **fail-open until `TURNSTILE_SECRET_KEY` is set** on
-  the function (verified: tokenless POST still returns ok, so the live form isn't broken by the deploy).
-  REMAINING (operator, IN ORDER): (1) upload the new `dist/` — bundle `index-CM1KXz1Y.js`, zip on Desktop;
-  (2) THEN add `TURNSTILE_SECRET_KEY` in Supabase → Edge Functions → Secrets. That ordering avoids a
-  breakage window. Free Cloudflare account, no DNS move (Turnstile is standalone).
+- **2026-06-26** — **Carrier Onboarding COMPLETE + Turnstile LIVE — full stack verified end-to-end.**
+  Cloudflare Turnstile "Managed" widget on the wizard's Review step (site key `0x4AAAAAADrPQCGH9pArEH04`,
+  public, in `web/acedispatch-site/.env`); `carrier-intake` v3 verifies the token via `siteverify`
+  (`TURNSTILE_SECRET_KEY` now set on the function). New `dist/` (bundle `index-CM1KXz1Y.js`) uploaded to
+  Hostinger. **Verified:** tokenless POST → 403, fake-token POST → 403, and a REAL browser submission with
+  2 image docs landed a row + both files (1.5MB + 22KB) in private Storage via signed URLs. Test data then
+  purged (intake/docs/storage all 0 — clean slate for the first real carrier). So: wizard live, bots
+  blocked, humans + docs flowing, RLS-sealed, GitHub-backed. **Done end-to-end.** Storage files must be
+  deleted via the Storage API, not SQL (a `protect_delete()` trigger blocks direct SQL deletes).
+  NEXT (tomorrow): **Phase 4 — manager's inbox** (authed view to work submissions: new → onboarded).
 - **2026-06-26** — **Carrier Onboarding LIVE (Phase 3 deployed + verified).** `/onboarding` is live on
   acedispatch.us: page returns 200 (SPA `.htaccess` routing intact), serves the new bundle, and a synthetic
   POST proved the full path — **legacy anon JWT key passes `verify_jwt=true`** (the modern `sb_publishable_`
