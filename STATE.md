@@ -330,6 +330,18 @@ autonomous writes (that earns in later, per Earned Authority).
 
 ## OPEN ITEMS / DECISION LOG
 
+- **2026-06-25** — **ace-os pushed to a PRIVATE GitHub remote** (`github.com/AceDispatch/ace-os`)
+  — first off-machine backup + the David-collaboration path; operating from VS Code as the cockpit (§15).
+  *Amends the 2026-06-21 git stance:* `.gitignore` now EXCLUDES the data layers (`inbox/`, `data/`,
+  `stage_zero/output/`, `outbox/**/*.{csv,json}`). Carrier/shipper PII is no longer git-tracked — it lives
+  on local disk and is migrating into **Supabase as the source of truth**. Git history was rebuilt to a
+  clean single-commit baseline so no PII ever reached the remote (217 files, code+docs only — verified).
+- **2026-06-25** — **Architecture firm-up IN PROGRESS** (ratification pending): unified multi-vertical
+  shipper DB to replace the flatbed-only registries (`outbox/shipper_db/ARCHITECTURE.md` + migrated
+  16k-row master); Supabase backend (`db/schema.sql` ready for operator to provision); grader to be
+  rebuilt as a multi-vertical classifier; a standardized `run_metro.py` routine to run the SE campaign
+  metro-by-metro. Doctrine: sort-don't-discard (everything binned by equipment), quality over token-
+  frugality, target = FTL-confirmed + onboardable.
 - **2026-06-22** — **Voice caller-ID reputation layer created** (`compliance/voice-reputation/`),
   the voice twin of the A2P/SMS layer. *Why:* a majority of outbound Aircall calls
   show as spam and some don't connect; root cause is that voice spam labeling is a
