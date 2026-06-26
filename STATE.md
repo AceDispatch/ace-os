@@ -337,6 +337,14 @@ autonomous writes (that earns in later, per Earned Authority).
 
 ## OPEN ITEMS / DECISION LOG
 
+- **2026-06-26** — **Carrier Onboarding LIVE (Phase 3 deployed + verified).** `/onboarding` is live on
+  acedispatch.us: page returns 200 (SPA `.htaccess` routing intact), serves the new bundle, and a synthetic
+  POST proved the full path — **legacy anon JWT key passes `verify_jwt=true`** (the modern `sb_publishable_`
+  key would 401), function validates + writes a structured `carrier_intake` row (test row deleted, table
+  clean). Anon key lives in `web/acedispatch-site/.env` (gitignored, public value). Deploy = Hostinger
+  File Manager: extract zip into `public_html` (folder-name trick = merge into existing). NOT yet tested:
+  doc upload via signed URL (best-effort). STILL OWED before public push: **Turnstile** anti-spam +
+  **Supabase Pro** (free tier auto-pauses after 7 idle days). No carrier CTA links added yet (decision 3).
 - **2026-06-25** — **Carrier Onboarding frontend (Phase 2) built.** 4-step wizard
   `web/acedispatch-site/src/pages/OnboardingPage.jsx` at the existing `/onboarding` route, wired to the
   `carrier-intake` function: Authority → Operation → Documents (optional, signed-URL upload) → Review (SMS
