@@ -46,9 +46,12 @@ create index if not exists shippers_region  on shippers (region);
 create index if not exists shippers_door    on shippers (door_status);
 create index if not exists shippers_stage   on shippers (research_stage);
 
--- keep updated_at fresh on every change
-create or replace function touch_updated_at() returns trigger as $$
-begin new.updated_at = now(); return new; end; $$ language plpgsql;
+-- keep updated_at fresh on every change (search_path pinned per security linter)
+create or replace function touch_updated_at() returns trigger
+  language plpgsql
+  set search_path = public, pg_temp
+as $$
+begin new.updated_at = now(); return new; end; $$;
 drop trigger if exists shippers_touch on shippers;
 create trigger shippers_touch before update on shippers
   for each row execute function touch_updated_at();
