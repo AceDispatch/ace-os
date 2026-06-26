@@ -1,0 +1,47 @@
+# Grader Summary — 2026-06-23
+
+- Input: `inbox/epa_roster_CA_sac8_2026-06-23.csv`
+- Rows in (raw): 3340
+- Distinct companies (after dedupe): 2730
+
+## Flatbed pile (the map for the Researcher)
+- FLATBED-YES: 328
+- FLATBED-UNSURE: 402
+- Total flatbed (ranked): 730
+
+## Other-vertical (seed for future directories)
+- van: 60
+- dump: 59
+- tanker: 27
+- heavy-haul: 2
+- Total other-vertical: 148
+
+## Discard (non-shippers, audit log)
+- DISCARD: 1852
+
+## Top 25 flatbed-yes (Researcher's first slice candidates)
+    1. [50] ALAMILLO REBAR INC  (332323)
+    2. [50] BENICIA FABRICATION & MACHINE, INC.  (332313)
+    3. [50] CALBODY STEEL FORMING LLC  (331221)
+    4. [50] PACIFIC STEEL GROUP  (332312)
+    5. [50] ROMAK IRON WORKS  (332312;33232)
+    6. [50] HOFFMANN FABRICATION INC  (332312)
+    7. [50] P & L CONCRETE PRODUCTS  (327320)
+    8. [50] CBC STEEL BUILDINGS LLC  (332311)
+    9. [50] NUCOR REBAR FABRICATION SOUTHWEST INC  (332312)
+   10. [50] HANSON PIPE & PRODUCTS  (327390)
+   11. [50] JENSEN PRECAST  (238140;32739)
+   12. [50] CUSTOM IRON WORKS  (332312)
+   13. [50] VALLEY IRON WORKS INC  (332312)
+   14. [50] CTU PRECAST  (327320)
+   15. [50] FAST FABRICATOR INC DBA WATER WORKS MFG  (332996)
+   16. [50] HANSON TRUSS COMPONENTS INC  (321214;32199)
+   17. [50] OLDCASTLE PRECAST  (326199;32739)
+   18. [50] PRECAST CONCRETE TECHNOLOGIES UNLIMITED LLC  (327320;32739)
+   19. [50] BAKER ART FOUNDRY  (332323)
+   20. [50] CTS FABRICATION  (325110;33291)
+   21. [50] HALEY METAL FABRICATIONNA INC  (332313)
+   22. [50] BETTER BUILT TRUSS  (321214;32721)
+   23. [50] CAPITOL IRON WORKS, INC.  (332312)
+   24. [50] CAPITOL STEEL PRODUCTS  (332323)
+   25. [50] DAVISON IRON WORKS INC  (332312)

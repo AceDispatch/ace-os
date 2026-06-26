@@ -1,0 +1,23 @@
+# Run Log — Market Strategy (next-1,000 lead pull)
+- **Date/time:** 2026-06-24
+- **Contract:** none (ad-hoc operator-requested analysis; touches Contract 02 Aircall plumbing read-only)
+- **Operator-initiated or scheduled:** Operator-initiated (Anthony) — "analyze leads + Aircall, build strategy for next 1,000 leads, SE flatbed focus from DAT heat maps."
+- **Inputs:**
+  - DAT Market Conditions heat maps (Flatbed; Load Density + Loads-to-Trucks) — operator screenshots.
+  - HubSpot CRM (read-only): COMPANY counts by state (whole portal); Anthony Smart book context. 3,200± companies.
+  - Aircall `/calls` via `scripts/aircall_pull.py` (read-only GETs): 2026-06-09→06-23, **3,075 calls (2,964 outbound)** → `outbox/2026-06-24_aircall-pull_calls.csv`. Validation pull 2026-06-22→23 (421 calls) discarded.
+  - FMCSA local data: `data/owner_operators_clean_1x1_2026-06-18.csv` (171,181 rows) for flatbed universe by state; `data/graded_true_age_61_364_2026-06-18.csv` (20,706) for graded pool / cream by state.
+- **Outputs (outbox/):**
+  - `2026-06-24_market-strategy_next-1000-leads.md` — full strategy + execution spec.
+  - `2026-06-24_market-strategy_pull-allocation.csv` — per-state allocation (sums to 1,000) with universe/book/saturation/heat/connect.
+  - `2026-06-24_aircall-pull_calls.csv` — raw read-only call pull (the evidence).
+- **Result:** success — three-source analysis reconciled into a ratify-ready pull plan. No CRM or Aircall writes (propose-only honored).
+- **Anomalies / data-quality notes:**
+  - Aircall region = dialed area code ≈ carrier domicile (mostly true for owner-op cells, not guaranteed). Small samples LA=27, VA=41, OK=11, WV=5 are directional only.
+  - Overall SE outbound connect (answered & ≥60s) is low (~6%) — consistent with the spam-flagged Sales line (`compliance/voice-reputation/`) compounding with stale lists in over-dialed markets (SC 0%, TN 2%, NC 3%).
+  - Graded "flatbed-tagged" counts derive from cargo flags, not true equipment; flatbed-PURE gradable SE pool (61–364d) ≈ 936, so the 1,000 is flatbed-LED with reefer/dry-van fill (Ace serves all three).
+  - HubSpot state field is populated; counts are whole-portal (all owners), used as total coverage.
+- **Proposed promotions:**
+  - Consider a standing "coverage vs. universe" saturation report (book ÷ FMCSA universe by state) as a recurring input to every pull decision — it cleanly exposed the FL/VA/LA/OK gaps. Could become a small left-brain agent feeding the Morning Sales Brief (Contract 03).
+  - The connect-by-region cut is a natural extension of Contract 02 (Connect Reconciliation) — promote area-code answer/connect rates into the recurring Aircall analysis so list fatigue is caught early (SC 0% would have flagged itself).
+  - Geo-exclusion rules worth codifying into `fmcsa-lead-grading` extraction: FL flatbed should exclude Miami/Hialeah drayage area codes; TX flatbed should exclude west-TX oilfield codes.

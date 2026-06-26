@@ -1,0 +1,36 @@
+# === Secrets — NEVER commit ===
+.env
+.env.*
+!.env.example
+
+# === Node / web build artifacts ===
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+
+# === OS / editor cruft ===
+.DS_Store
+Thumbs.db
+*.swp
+
+# === DATA LAYERS — never pushed to a remote (carrier/shipper PII + bulky) ===
+# Kept LOCAL on disk and migrated into Supabase as the source of truth.
+# (Replaces the 2026-06-21 "tracked by operator choice" stance now that a
+#  GitHub remote exists — honors STATE.md's "review PII before pushing" rule.)
+inbox/
+data/
+stage_zero/output/
+stage_zero/data/
+# outbox: exclude data artifacts (CSV/JSON) but KEEP methodology docs (*.md)
+outbox/**/*.csv
+outbox/**/*.json
+outbox/*.csv
+outbox/*.json
+# the migrated master export (PII) lives in Supabase, not git
+db/seed/

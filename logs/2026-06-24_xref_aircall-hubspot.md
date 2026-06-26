@@ -1,0 +1,22 @@
+# Run Log — Aircall ↔ HubSpot Cross-Reference
+- **Date/time:** 2026-06-24
+- **Contract:** contracts/02-connect-reconciliation.md (broadened — full book, 45-day window, not just 6/1–6/5)
+- **Operator-initiated or scheduled:** Operator-initiated (Anthony) — "pull the actual aircall data and run it against our hubspot data."
+- **Inputs:**
+  - Aircall `/calls` 2026-05-10→06-24 via `scripts/aircall_pull.py` (read-only): **4,949 calls** → `outbox/2026-06-24_aircall-pull_45d.csv`. 2,702 unique numbers.
+  - HubSpot all COMPANY records (read-only `query_crm_data`, 7 paged pulls): **3,064** companies (phone, dot, state, tier, score, owner, status, equipment).
+- **Outputs (outbox/):**
+  - `2026-06-24_xref_summary.md`
+  - `2026-06-24_xref_matched_calls.csv` (2,443)
+  - `2026-06-24_xref_warm_followup.csv` (103 connected; 67 no status)
+  - `2026-06-24_xref_orphan_outbound_connected.csv` (129)
+  - `2026-06-24_xref_orphan_calls.csv` (259)
+- **Result:** success — 80% book coverage; 103 documented-warm leads (67 status-unset); 129 uncaptured outbound sales connects. No CRM/Aircall writes (propose-only honored).
+- **Anomalies / data-quality notes:**
+  - Tier field has two conventions (`P1` vs `Priority 1/2/3`) — normalize before tier-based automation.
+  - 113 phone numbers map to >1 company (duplicate records) — dedup candidates.
+  - Orphan ≥60s (167) is inflated by inbound/dispatch (clean 2023 line). Split applied: 129 outbound-only (sales recoveries) vs 49 inbound-involving (operational). Outbound-orphan still needs vendor/broker triage before record creation.
+  - Answer 74% vs ≥60s-conversation 4.2% on matched leads = answer-to-talk gap consistent with the flagged Sales line + stale lists (`compliance/voice-reputation/`).
+- **Proposed promotions:**
+  - The canonical `scripts/aircall_hubspot_xref.py` has a hardcoded stale tool-results path and needs a separate upstream `_xref_aggregates.json` step. A self-contained rewrite (builds aggregates inline from the calls CSV; reads the book from explicit page files; splits orphans by direction; adds book-coverage + warm-status cuts) proved out this run. Recommend promoting it to replace the canonical (operator-ratified).
+  - Promote the recurring cut: book-coverage %, warm-but-status-unset list, and outbound-orphan recoveries — these are the actionable Contract-02 deliverables; worth scheduling weekly so warm leads don't die undocumented (SC-style 0% list fatigue would self-flag).

@@ -1,0 +1,21 @@
+# Run Log — Staged Lead Pull (FL/VA/LA core + SE-belt topup)
+- **Date/time:** 2026-06-24
+- **Contract:** trucking-leads pipeline (fmcsa-lead-grading skill); ad-hoc operator-directed pull
+- **Operator-initiated or scheduled:** Operator-initiated (Anthony) — "pull doesn't need to be flatbed only, just true tractors like we built before"; chose the ≤270d FL/VA/LA + topup option.
+- **Inputs:**
+  - Live FMCSA census `az4n-8mr2.csv` — 1×1 for-hire active interstate in FL,VA,LA,GA,AL,SC,NC (vehicle counts for the tractor gate). ~58k census rows scanned.
+  - `data/owner_operators_1x1_true_age_under_1yr_2026-06-18.csv` (25,544) — true authority age join.
+  - HubSpot book DOTs (2,949) for net-new dedup — from the 7 paged `query_crm_data` pulls this session.
+  - Grader: `skills/fmcsa-lead-grading/scripts/grade_leads.py` (v4, run unmodified), `--max-age 270`.
+- **Outputs (outbox/):**
+  - `2026-06-24_pull_FL-VA-LA-belt_1000.csv` — 1,000 ranked, tiered, tractor-verified, net-new leads (HubSpot-import-ready).
+  - `2026-06-24_pull_FL-VA-LA-belt_summary.md`.
+- **Result:** success — 1,000 staged: 743 FL/VA/LA core (≤270d) + 257 GA/AL/SC/NC topup (≤180d). Tier P1 29 / P2 204 / P3 326 / P4 441. No CRM/Aircall writes.
+- **Anomalies / data-quality notes:**
+  - v4 tractor gate discarded 2,895/5,113 (57%) as box trucks — FL/VA/LA fresh dispatchable pools are ~50% box trucks (LA 64%). Confirms the strict-tractor pool can't hit 1,000 from FL/VA/LA alone at ≤180d (only ~608 raw / 743 graded at ≤270d).
+  - Equipment skews general-freight (825) over flatbed (98)/reefer (77). Cargo flags = commodity inference, not equipment; all 1,000 are verified tractors per the vehicle-count gate.
+  - Topup re-weighted GA/AL over Aircall-fatigued NC/SC (SC 0% connect on 195 dials, NC 3%).
+  - True age from 06-18 snapshot; staging used a scripts/ assembly (census .csv + true-age join) rather than the live AuthHist path in extract_leads.py — to avoid Socrata throttling and to keep skills/ untouched (read-only). Grader ran unmodified.
+- **Proposed promotions:**
+  - extract_leads.py's AuthHist pull (.json, no backoff) is the throttle-risk in the canonical pipeline; the reliable `.csv` + retry/backoff pattern used here for census should be promoted into it (operator-ratified).
+  - A standing "tractor-share by market" reading is worth keeping: box-truck rates vary a lot by state (LA 64% vs ~29% national) and materially change how deep a market's true-tractor pool is — useful input to every future allocation.
