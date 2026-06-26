@@ -24,7 +24,7 @@ const Navigation = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <img 
-              src="https://horizons-cdn.hostinger.com/1191ea2e-bcfd-4bab-a9f3-4c5fa4e256be/c7c96b8a1debfe34ff8f0b30873ed207.png" 
+              src="/ace-logo.png"
               alt="Ace Dispatch Logo" 
               className="h-10 w-auto object-contain group-hover:scale-110 transition-transform duration-300"
             />
