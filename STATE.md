@@ -337,6 +337,14 @@ autonomous writes (that earns in later, per Earned Authority).
 
 ## OPEN ITEMS / DECISION LOG
 
+- **2026-06-25** — **Carrier Onboarding frontend (Phase 2) built.** 4-step wizard
+  `web/acedispatch-site/src/pages/OnboardingPage.jsx` at the existing `/onboarding` route, wired to the
+  `carrier-intake` function: Authority → Operation → Documents (optional, signed-URL upload) → Review (SMS
+  A2P consent + TOS). Honeypot + client validation; doc upload is best-effort (never blocks the lead);
+  survival-promise copy; confirmation screen. `npx vite build` passes (1973 modules) → `dist/` ready.
+  Build env in `web/acedispatch-site/.env.example` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, both
+  public). NEXT: Phase 3 = operator sets the anon key + uploads `dist/` to Hostinger, then live end-to-end
+  test. Pre-launch still owed: Turnstile + Supabase Pro. No carrier CTA links added yet (decision 3).
 - **2026-06-25** — **Carrier Onboarding backend (Phase 1) live in Supabase.** Tables `carrier_intake` +
   `carrier_documents` (RLS-sealed, service_role only), private Storage bucket `carrier-docs`, and Edge
   Function `carrier-intake` (deployed, verify_jwt=true) — validates the form, inserts the intake, issues

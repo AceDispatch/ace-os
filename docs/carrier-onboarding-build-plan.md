@@ -108,7 +108,7 @@ Supabase is always the source of truth either way.
 
 ## PHASED SEQUENCE (~3–4 working days)
 - **Phase 1 — Backend (me):** ✅ **DONE 2026-06-25** — `carrier_intake` + `carrier_documents` (RLS-sealed), `carrier-docs` private bucket, `carrier-intake` edge function deployed & tested end-to-end; advisors clean. Source in `db/functions/` + `db/migrations/`.
-- **Phase 2 — Frontend (me):** the 4-step wizard wired to the function; build.
+- **Phase 2 — Frontend (me):** ✅ **DONE 2026-06-25** — 4-step wizard (`src/pages/OnboardingPage.jsx`) wired to the `carrier-intake` function at the existing `/onboarding` route: Authority → Operation → Documents (optional, signed-URL upload) → Review (SMS A2P consent + TOS). Honeypot, client validation, best-effort doc upload (never blocks the lead), confirmation screen, survival-promise copy. `npx vite build` passes (1973 modules). Build-time env documented in `web/acedispatch-site/.env.example` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — both public).
 - **Phase 3 — Deploy (operator + me):** env + Hostinger upload + live end-to-end test.
 - **Phase 4 — Ops:** submissions view (manager's inbox) + status workflow; HubSpot mirror (if chosen); go Pro.
 - **Phase 5 — Polish:** Turnstile, FMCSA cross-ref on submit (enrich vs known leads — data flywheel), notifications.
