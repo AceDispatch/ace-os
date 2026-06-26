@@ -337,6 +337,12 @@ autonomous writes (that earns in later, per Earned Authority).
 
 ## OPEN ITEMS / DECISION LOG
 
+- **2026-06-25** — **Carrier Onboarding backend (Phase 1) live in Supabase.** Tables `carrier_intake` +
+  `carrier_documents` (RLS-sealed, service_role only), private Storage bucket `carrier-docs`, and Edge
+  Function `carrier-intake` (deployed, verify_jwt=true) — validates the form, inserts the intake, issues
+  signed upload URLs for docs. Tested end-to-end; advisors clean. Source: `db/functions/carrier-intake/`,
+  `db/migrations/`. Spec/decisions: `docs/carrier-onboarding-build-plan.md`. NEXT: Phase 2 = the React
+  onboarding wizard in `web/acedispatch-site/`.
 - **2026-06-25** — **ace-os pushed to a PRIVATE GitHub remote** (`github.com/AceDispatch/ace-os`)
   — first off-machine backup + the David-collaboration path; operating from VS Code as the cockpit (§15).
   *Amends the 2026-06-21 git stance:* `.gitignore` now EXCLUDES the data layers (`inbox/`, `data/`,

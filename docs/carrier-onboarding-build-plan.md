@@ -107,7 +107,7 @@ Supabase is always the source of truth either way.
 - DB stays advisor-clean (run `get_advisors` post-DDL).
 
 ## PHASED SEQUENCE (~3–4 working days)
-- **Phase 1 — Backend (me):** schema migration + bucket + RLS + Edge Function deployed & test-posted.
+- **Phase 1 — Backend (me):** ✅ **DONE 2026-06-25** — `carrier_intake` + `carrier_documents` (RLS-sealed), `carrier-docs` private bucket, `carrier-intake` edge function deployed & tested end-to-end; advisors clean. Source in `db/functions/` + `db/migrations/`.
 - **Phase 2 — Frontend (me):** the 4-step wizard wired to the function; build.
 - **Phase 3 — Deploy (operator + me):** env + Hostinger upload + live end-to-end test.
 - **Phase 4 — Ops:** submissions view (manager's inbox) + status workflow; HubSpot mirror (if chosen); go Pro.
