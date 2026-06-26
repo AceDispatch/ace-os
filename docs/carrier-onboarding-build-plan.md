@@ -113,12 +113,14 @@ Supabase is always the source of truth either way.
 - **Phase 4 — Ops:** submissions view (manager's inbox) + status workflow; HubSpot mirror (if chosen); go Pro.
 - **Phase 5 — Polish:** Turnstile, FMCSA cross-ref on submit (enrich vs known leads — data flywheel), notifications.
 
-## OPEN DECISIONS FOR OPERATOR
-1. **HubSpot mirror** now, or Supabase-only for v1?
-2. **Required vs optional docs** at submit — hard-require all 5, or allow "I'll send X later" (status=docs_pending)?
-3. **Page placement/route** + which CTAs link to it.
-4. **Pro upgrade** timing (recommend: before public launch).
-5. **Turnstile** (free Cloudflare anti-spam) in v1 or phase 5?
+## DECISIONS (resolved 2026-06-25)
+1. **Supabase-only for v1**; build the function so the HubSpot mirror bolts on later (structure for it, don't wire it now).
+2. **Documents optional at submit** — allow "send later" (status=docs_pending); encourage full upload, dispatcher can collect the rest. Never block the lead on paperwork.
+3. **No CTAs yet.** Current contact form lives at `acedispatch.us/contact`. New onboarding page route + linking decided at deploy time.
+4. **Supabase Pro** — operator upgrading within 24h.
+5. **Turnstile anti-spam REQUIRED before launch** (moved from phase 5 into the pre-launch set).
+
+> Build is QUEUED behind the ace-os standardization/housekeeping (see below). Execute that first, then this.
 
 ## FUTURE ENHANCEMENTS
 - FMCSA cross-ref on submit (auto-verify authority age / tractor vs the lead-grading data).

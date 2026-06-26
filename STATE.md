@@ -114,7 +114,14 @@ internally; uncertainty about whether a specific source's terms permit a use.
 
 ---
 
-## THE SHIPPER-REGISTRY PIPELINE (four organs)
+## THE SHIPPER PIPELINE — Prospect → Classify → Research → Match
+
+**CANONICAL VOCABULARY (standardized 2026-06-25 · see README.md):** the pipeline is
+**Prospect → Classify → Research → Match**. The original "four organs" below map to it: Prospector =
+**Prospect**; the Refiner split into **Classify** (the Grader — now MULTI-VERTICAL: sorts ALL equipment,
+not just flatbed) and **Research** (the Researcher — confirms FTL + door + lanes); Matchmaker = **Match**.
+The **Assayer** (grades data SOURCES) is a parked, OPTIONAL organ — used when vetting new source mines,
+not a core run-stage. Source of truth is now **Supabase** (`db/schema.sql`), not CSV registries.
 
 The shipper engine is a funnel of four parts. Each is simple, does one job, and
 feeds the others. **Build order and current status noted per organ.**

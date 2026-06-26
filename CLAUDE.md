@@ -73,8 +73,8 @@ from one to the other (until the Consolidation Agent is commissioned).
 | 5 | Shipper Grader | `contracts/05-shipper-grader.md` | **Active — LOCKED 2026-06-13** |
 | 6 | Shipper Prospector | `contracts/06-shipper-prospector.md` | **Active 2026-06-13** |
 
-**Shipper pipeline order** (note: contract numbers are build order, not run order):
-Prospector (06) pulls EPA wide -> Grader (05) grades & ranks -> Researcher (07, next)
-deep-researches slices of 50. The Prospector is the only agent that writes to
-`inbox/` (it is the pipeline source). Geography/trailer-matching is the future
-Matchmaker.
+**Shipper pipeline order** — canonical: **Prospect → Classify → Research → Match** (full vocab in README.md).
+Prospector (06) **Prospects** (pulls EPA wide) -> Grader (05) **Classifies** (sorts by equipment,
+multi-vertical) -> Researcher **Researches** (confirms FTL + door + lanes) -> Matchmaker **Matches** (future).
+Contract numbers are build order, not run order. The Prospector is the only agent that writes to
+`inbox/` (the pipeline source). Source of truth is now Supabase (`db/schema.sql`), not CSV registries.

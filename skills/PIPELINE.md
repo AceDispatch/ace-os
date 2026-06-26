@@ -1,6 +1,8 @@
 # ACE-OS Shipper Pipeline — Skills Map
 
-Three skills, run in order. Each does ONE job with sharp edges.
+Canonical stages: **Prospect → Classify → Research → Match** (see README.md). These three skills run the
+first three; Match is the future 4th. Each does ONE job with sharp edges. NOTE: "grading" is the **Classify**
+stage — now a MULTI-VERTICAL classifier that sorts ALL equipment (flatbed/van/dump/tanker/heavy-haul), not just flatbed.
 
 ## The pipeline
   shipper-prospecting  →  shipper-grading  →  shipper-researching
