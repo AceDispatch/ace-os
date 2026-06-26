@@ -63,3 +63,8 @@ create or replace view v_ready_to_onboard as
     and door_status = 'GREEN'
     and ftl_status in ('CONFIRMED','LIKELY')
   order by onboarding_ease, state, city;
+
+-- Grant the secret/service_role key full access to the table + view.
+-- anon/authenticated get NOTHING (RLS on + no grant = sealed from the public key).
+grant all on public.shippers to service_role;
+grant all on public.v_ready_to_onboard to service_role;
